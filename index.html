@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ambiente Python Web</title>
+
+  <style>
+    /* ======== ESTILOS GENERALES ======== */
+    :root {
+      --bg-main: #181a1b;
+      --bg-panel: #202324;
+      --bg-editor: #181a1b;
+      --bg-console: #111314;
+      --border-soft: #3a3d3f;
+      --text-main: #e6e6e6;
+      --accent-green: #00b894;
+      --accent-green-hover: #00d8a4;
+      --accent-blue: #0984e3;
+      --accent-blue-hover: #4ea8ff;
+      --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.4);
+      --accent-red: #d63031;
+      --accent-red-hover: #ff7675;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Consolas, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    /* ====== PANTALLA INICIAL ====== */
+    #pantalla-inicial {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .inicio-card {
+      background: var(--bg-panel);
+      padding: 24px 28px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-soft);
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .inicio-card h1 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.6rem;
+      text-align: center;
+    }
+
+    .inicio-card p {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      color: #d0d0d0;
+      text-align: center;
+    }
+
+    .inicio-form-group {
+      margin-bottom: 12px;
+    }
+
+    .inicio-form-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+      color: #c0c0c0;
+    }
+
+    .inicio-form-group input,
+    .inicio-form-group select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-editor);
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    #btn-comenzar {
+      margin-top: 10px;
+      width: 100%;
+      background: var(--accent-green);
+      border: none;
+      padding: 9px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.1s ease, transform 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    #btn-comenzar:hover {
+      background: var(--accent-green-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.35);
+    }
+
+    .inicio-error {
+      color: #ff7675;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
+    /* ======== APP PRINCIPAL ======== */
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 15px 20px 30px;
+      display: none; /* se muestra después de comenzar */
+    }
+
+    /* ======== HEADER ======== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      background: var(--bg-panel);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    #titulo {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    #lbl-tiempo {
+      font-size: 1.1rem;
+      color: var(--accent-green);
+      margin-left: 10px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #btn-ayuda {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent-green);
+      color: #000;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s ease, transform 0.08s ease, box-shadow 0.08s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    #btn-ayuda:hover {
+      background: var(--accent-green-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 7px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Indicador de nivel + errores */
+    #nivel-indicador {
+      margin: 6px 2px 14px;
+      font-size: 0.9rem;
+      color: #b2bec3;
+    }
+
+    #nivel-actual-texto {
+      font-weight: bold;
+      color: var(--accent-green);
+    }
+
+    #contador-errores {
+      font-weight: bold;
+      color: #ff7675;
+    }
+
+    /* ======== LAYOUT PRINCIPAL ======== */
+    main {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    #col-izquierda,
+    #col-derecha {
+      background: var(--bg-panel);
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    #col-izquierda h2,
+    #col-derecha h2,
+    #salida-contenedor h2 {
+      margin-top: 0;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #a0a0a0;
+    }
+
+    /* ======== TEXTAREAS ======== */
+    #texto-problema,
+    #area-codigo {
+      width: 100%;
+      resize: none;
+      background: var(--bg-editor);
+      color: var(--text-main);
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      padding: 10px;
+      font-size: 0.95rem;
+    }
+
+    #texto-problema {
+      height: 180px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    #area-codigo {
+      height: 260px;
+      font-family: Consolas, monospace;
+    }
+
+    /* ======== BOTONES ======== */
+    #botones-problema {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: var(--accent-green);
+      border: none;
+      padding: 8px 18px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.1s ease;
+    }
+
+    button:hover {
+      background: var(--accent-green-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    #btn-compilar {
+      background: var(--accent-blue);
+    }
+
+    #btn-compilar:hover {
+      background: var(--accent-blue-hover);
+    }
+
+    #btn-siguiente {
+      background: #6c5ce7;
+    }
+
+    #btn-siguiente:hover {
+      background: #9b80ff;
+    }
+
+    #btn-rendirse {
+      background: var(--accent-red);
+    }
+
+    #btn-rendirse:hover {
+      background: var(--accent-red-hover);
+    }
+
+    /* ======== SALIDA ======== */
+    #salida-contenedor {
+      background: var(--bg-panel);
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    #salida {
+      background: var(--bg-console);
+      padding: 10px;
+      border-radius: 8px;
+      min-height: 100px;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+    }
+
+    /* ======== MODAL BONITO ======== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+      z-index: 1000;
+    }
+
+    .oculto { display: none; }
+
+    .modal-content {
+      background: #202324;
+      padding: 20px 24px;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+      max-width: 330px;
+      text-align: center;
+      animation: aparecer 0.15s ease-out;
+    }
+
+    @keyframes aparecer {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    #modal-cerrar {
+      margin-top: 12px;
+      background: var(--accent-green);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    #modal-cerrar:hover {
+      background: var(--accent-green-hover);
+    }
+
+    /* ======== PANTALLA DE SALIDA ======== */
+    #pantalla-final {
+      display: none;
+      text-align: center;
+      margin-top: 80px;
+      color: var(--text-main);
+    }
+
+    #pantalla-final h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PANTALLA INICIAL -->
+  <div id="pantalla-inicial">
+    <div class="inicio-card">
+      <h1>Ambiente Python</h1>
+      <p>Por favor ingresa tus datos para comenzar.</p>
+
+      <div class="inicio-form-group">
+        <label for="input-nombre">Nombre</label>
+        <input id="input-nombre" type="text" placeholder="Tu nombre" />
+      </div>
+
+      <div class="inicio-form-group">
+        <label for="input-correo">Correo electrónico</label>
+        <input id="input-correo" type="email" placeholder="tucorreo@example.com" />
+      </div>
+
+      <div class="inicio-form-group">
+        <label for="select-genero">Género</label>
+        <select id="select-genero">
+          <option value="">Selecciona una opción</option>
+          <option value="masculino">Masculino</option>
+          <option value="femenino">Femenino</option>
+          <option value="no binario">No binario</option>
+        </select>
+      </div>
+
+      <div class="inicio-error" id="inicio-error"></div>
+
+      <button id="btn-comenzar">Comenzar</button>
+    </div>
+  </div>
+
+  <!-- APP PRINCIPAL -->
+  <div class="app-container" id="app">
+
+    <!-- MODAL -->
+    <div id="modal" class="modal oculto">
+      <div class="modal-content">
+        <p id="modal-texto"></p>
+        <button id="modal-cerrar">OK</button>
+      </div>
+    </div>
+
+    <header>
+      <div id="titulo">Ambiente Python</div>
+      <div class="header-right">
+        <span id="lbl-tiempo">00:00</span>
+        <button id="btn-ayuda">?</button>
+      </div>
+    </header>
+
+    <div id="nivel-indicador">
+      Nivel actual: <span id="nivel-actual-texto">NOVATO</span>
+      · Errores totales: <span id="contador-errores">0</span>
+    </div>
+
+    <main>
+      <section id="col-izquierda">
+        <h2>Problema</h2>
+        <textarea id="texto-problema" readonly></textarea>
+
+        <div id="botones-problema">
+          <button id="btn-compilar">Compilar</button>
+          <button id="btn-ejecutar">Ejecutar</button>
+          <button id="btn-siguiente">Siguiente</button>
+          <button id="btn-rendirse">Rendirse</button>
+        </div>
+      </section>
+
+      <section id="col-derecha">
+        <h2>Código Python</h2>
+        <textarea id="area-codigo"></textarea>
+      </section>
+    </main>
+
+    <section id="salida-contenedor">
+      <h2>Salida</h2>
+      <pre id="salida"></pre>
+    </section>
+  </div>
+
+  <!-- PANTALLA FINAL -->
+  <div id="pantalla-final">
+    <h1 id="final-titulo">Gracias por participar 💛</h1>
+    <p id="final-mensaje">Tu sesión ha terminado.</p>
+  </div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const { createClient } = supabase;
+
+    const supabaseClient = createClient(
+      "https://muckvjahwifzhrxfxbvy.supabase.co",
+      "sb_publishable_yMjtwVxwVrKnNd_PbQ0H8A_3y9-1M-R"
+    );
+  </script>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.0/full/pyodide.js"></script>
+
+  <script>
+    /* ========== MODAL ========== */
+    function mostrarModal(texto) {
+      document.getElementById("modal-texto").textContent = texto;
+      document.getElementById("modal").classList.remove("oculto");
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      const modalCerrar = document.getElementById("modal-cerrar");
+      if (modalCerrar) {
+        modalCerrar.onclick = () =>
+          document.getElementById("modal").classList.add("oculto");
+      }
+    });
+
+    /* ========== PYODIDE ========== */
+    let pyodideReady = loadPyodide({
+      indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.0/full/"
+    });
+
+    /* ========== TEMPORIZADOR ========== */
+    class Temporizador {
+      constructor(cb) {
+        this.seg = 0;
+        this.id = null;
+        this.cb = cb;
+      }
+      iniciar() {
+        if (this.id) return;
+        this.id = setInterval(() => {
+          this.seg++;
+          let m = Math.floor(this.seg / 60);
+          let s = this.seg % 60;
+          this.cb(`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`);
+        }, 1000);
+      }
+      detener() { clearInterval(this.id); this.id = null; }
+      reiniciar() { this.detener(); this.seg=0; this.cb("00:00"); this.iniciar(); }
+      getSegundos() { return this.seg; }
+    }
+
+    /* ========== PROBLEMAS (6 por nivel) ========== */
+    class Problemas {
+      constructor() {
+        this.niv = "NOVATO";
+        this.i = 0;
+
+        this.p = {
+          NOVATO: [
+            "Problema 1: Imprime 'Hola Mundo'.",
+            "Problema 2: Suma 10 + 15 + 25 y muestra el resultado.",
+            "Problema 3: Calcula y muestra el cuadrado de 3.",
+            "Problema 4: Calcula el perímetro de un cuadrado de lado 4.",
+            "Problema 5: Declara una variable nombre con el valor 'Ana' y muestra 'Hola, Ana'.",
+            "Problema 6: Calcula el área de un rectángulo de base 5 y altura 3."
+          ],
+          INTERMEDIO: [
+            "Problema 1: Determina si el número 7 es primo.",
+            "Problema 2: Crea una función que invierta la cadena 'Python'.",
+            "Problema 3: Calcula la suma de los números pares del 1 al 100.",
+            "Problema 4: Invierte la lista [1, 2, 3, 4] y muéstrala.",
+            "Problema 5: Cuenta cuántos números mayores que 10 hay en [4, 11, 32, 9, 18].",
+            "Problema 6: Encuentra y muestra el máximo de la lista [3, 5, 2, 8, 1]."
+          ],
+          AVANZADO: [
+            "Problema 1: Calcula el factorial de 5 usando recursión.",
+            "Problema 2: Cuenta cuántas vocales tiene la palabra 'Programacion'.",
+            "Problema 3: Elimina duplicados de [1,2,2,3,3,3,4].",
+            "Problema 4: Usa recursión para sumar los elementos de [1, 2, 3, 4, 5].",
+            "Problema 5: Dado el diccionario {'a': 1, 'b': 2, 'c': 3}, muestra la suma de sus valores.",
+            "Problema 6: Ordena la lista [9, 1, 4, 2, 7] de menor a mayor y muéstrala."
+          ]
+        };
+
+        this.r = {
+          NOVATO: [
+            "Hola Mundo",
+            "50",
+            "9",
+            "16",
+            "Hola, Ana",
+            "15"
+          ],
+          INTERMEDIO: [
+            "Es primo",
+            "nohtyP",
+            "2550",
+            "[4, 3, 2, 1]",
+            "3",
+            "8"
+          ],
+          AVANZADO: [
+            "120",
+            "5",
+            "1 2 3 4",
+            "15",
+            "6",
+            "[1, 2, 4, 7, 9]"
+          ]
+        };
+
+        this.h = {
+          NOVATO: [
+            [
+              "'Hola Mundo' es de tipo string.",
+              "Usa print() para imprimir.",
+              "Recuerda usar comillas dentro de print()."
+            ],
+            [
+              "Necesitarás el operador '+'.",
+              "Puedes sumar dentro de print().",
+              "No uses comillas en los enteros."
+            ],
+            [
+              "Crea una variable llamada 'cuadrado'.",
+              "Usa el operador *, por ejemplo: cuadrado = 3*3.",
+              "Luego imprime la variable con print(cuadrado)."
+            ],
+            [
+              "El perímetro de un cuadrado es 4 veces el lado.",
+              "Guarda el lado en una variable, por ejemplo: lado = 4.",
+              "Perímetro = lado * 4, luego imprímelo."
+            ],
+            [
+              "Declara una variable: nombre = 'Ana'.",
+              "Puedes concatenar cadenas con '+'.",
+              "Imprime 'Hola, ' seguido de la variable nombre."
+            ],
+            [
+              "El área de un rectángulo es base * altura.",
+              "Usa base = 5 y altura = 3.",
+              "Multiplica y muestra el resultado con print()."
+            ]
+          ],
+          INTERMEDIO: [
+            [
+              "Un número primo solo tiene 2 divisores: 1 y él mismo.",
+              "Puedes usar un ciclo for para probar posibles divisores.",
+              "Si encuentras un divisor distinto de 1 y de 7, entonces no es primo."
+            ],
+            [
+              "Recuerda que las cadenas se pueden invertir con slicing.",
+              "Usa cadena[::-1] para obtener la cadena al revés.",
+              "Crea una función que reciba 'Python' y devuelva la cadena invertida."
+            ],
+            [
+              "Un número par es divisible entre 2.",
+              "Puedes usar range(2, 101, 2) para ir de 2 a 100 de 2 en 2.",
+              "Suma esos números con sum(range(...)) y muéstralo."
+            ],
+            [
+              "Declara la lista: numeros = [1, 2, 3, 4].",
+              "Puedes usar numeros[::-1] para invertirla.",
+              "Imprime la lista resultante."
+            ],
+            [
+              "Declara la lista: nums = [4, 11, 32, 9, 18].",
+              "Usa un contador para los números mayores que 10.",
+              "Recorre la lista y aumenta el contador cuando nums[i] > 10."
+            ],
+            [
+              "Declara la lista: nums = [3, 5, 2, 8, 1].",
+              "Puedes usar la función max(nums).",
+              "Imprime el resultado de max(nums)."
+            ]
+          ],
+          AVANZADO: [
+            [
+              "Define una función factorial(n).",
+              "Caso base: si n es 1, regresa 1.",
+              "En otro caso, regresa n * factorial(n-1)."
+            ],
+            [
+              "Debes recorrer cada letra de la palabra.",
+              "Convierte la palabra a minúsculas para simplificar.",
+              "Si la letra está en 'aeiou', aumenta un contador."
+            ],
+            [
+              "Los conjuntos (set) eliminan duplicados.",
+              "Convierte la lista a set y luego otra vez a list.",
+              "Ordena la lista y luego imprímela en el formato deseado."
+            ],
+            [
+              "Piensa en una función recursiva para sumar una lista.",
+              "Caso base: si la lista está vacía, regresa 0.",
+              "Si no está vacía, regresa primer_elemento + suma(resto_de_la_lista)."
+            ],
+            [
+              "Declara el diccionario: d = {'a': 1, 'b': 2, 'c': 3}.",
+              "Puedes usar d.values() para obtener los valores.",
+              "Suma los valores con sum(d.values())."
+            ],
+            [
+              "Declara la lista: nums = [9, 1, 4, 2, 7].",
+              "Usa nums.sort() o sorted(nums).",
+              "Imprime la lista ordenada de menor a mayor."
+            ]
+          ]
+        };
+
+        this.init = {
+          NOVATO: [
+            "",
+            "",
+            "",
+            "lado = 4\n",
+            "nombre = 'Ana'\n",
+            "base = 5\naltura = 3\n"
+          ],
+          INTERMEDIO: [
+            "n = 7\n",
+            "cadena = 'Python'\n",
+            "",
+            "numeros = [1, 2, 3, 4]\n",
+            "nums = [4, 11, 32, 9, 18]\n",
+            "nums = [3, 5, 2, 8, 1]\n"
+          ],
+          AVANZADO: [
+            "",
+            "palabra = 'Programacion'\ncontador = 0\n",
+            "numeros = [1,2,2,3,3,3,4]\n",
+            "numeros = [1, 2, 3, 4, 5]\n",
+            "d = {'a': 1, 'b': 2, 'c': 3}\n",
+            "nums = [9, 1, 4, 2, 7]\n"
+          ]
+        };
+      }
+
+      act()   { return this.p[this.niv][this.i]; }
+      resp()  { return this.r[this.niv][this.i]; }
+      pistas(){ return this.h[this.niv][this.i]; }
+      code()  { return this.init[this.niv][this.i]; }
+      numNivel() {
+        return this.niv === "NOVATO" ? 1 :
+               this.niv === "INTERMEDIO" ? 2 : 3;
+      }
+
+      sig() {
+        this.i++;
+        if (this.i >= this.p[this.niv].length) {
+          if (this.niv === "AVANZADO") {
+            this.i = this.p[this.niv].length - 1;
+          } else {
+            this.i = 0;
+          }
+        }
+      }
+
+      cambiar(n) {
+        this.niv = n;
+        this.i = 0;
+      }
+    }
+
+    /* ========== NORMALIZAR ========= */
+    function normalizar(s){
+      return s.replace(/\s+/g," ").replace(/\s*,\s*/g,",").trim();
+    }
+
+    /* ========== EVALUAR NIVEL (simplificado) ========= */
+    function evaluar(t,e,a,n){
+      let P=e+a;
+      let rapido=t<120;
+      if(rapido&&P<=1&&n<3) n++;
+      if(n<1.5) return "NOVATO";
+      if(n<2.5) return "INTERMEDIO";
+      return "AVANZADO";
+    }
+
+    /* ========== API FLASK + SUPABASE (RASGOS) ========== */
+    async function obtenerRasgosPorEmail(email) {
+      try {
+        const resp = await fetch("https://apinet.catalabs.mx/get_test_by_email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email })
+        });
+
+        const texto = await resp.text();
+        console.log("Respuesta cruda de API Flask:", texto);
+
+        if (!resp.ok) {
+          console.error("Error HTTP desde Flask:", resp.status);
+          return null;
+        }
+
+        let data = null;
+        try {
+          data = JSON.parse(texto);
+        } catch (e) {
+          console.error("No se pudo parsear el JSON de rasgos:", e);
+          return null;
+        }
+
+        // Si viene como lista [ { ... } ], tomar el primer elemento
+        if (Array.isArray(data) && data.length > 0) {
+          data = data[0];
+        }
+
+        // Esperamos un objeto con claves: amabilidad, apertura, estabilidad_emocional,
+        // extroversion, responsabilidad, sociabilidad
+        return data;
+      } catch (e) {
+        console.error("Error llamando a la API Flask:", e);
+        return null;
+      }
+    }
+
+    async function guardarRasgosEnSupabase(usuarioId, email, rasgosObj) {
+      try {
+        const fila = {
+          usuario_id: usuarioId,
+          email: email,
+          datos: rasgosObj, // JSON completo (columna json/jsonb)
+
+          // columnas individuales
+          amabilidad: rasgosObj.amabilidad ?? null,
+          apertura: rasgosObj.apertura ?? null,
+          estabilidad_emocional: rasgosObj.estabilidad_emocional ?? null,
+          extroversion: rasgosObj.extroversion ?? null,
+          responsabilidad: rasgosObj.responsabilidad ?? null,
+          sociabilidad: rasgosObj.sociabilidad ?? null
+        };
+
+        const { error } = await supabaseClient
+          .from("rasgos_api") // tabla donde guardas los rasgos
+          .insert([fila]);
+
+        if (error) {
+          console.error("Error guardando rasgos en Supabase:", error);
+        } else {
+          console.log("Rasgos guardados correctamente en Supabase.");
+        }
+      } catch (e) {
+        console.error("Excepción al guardar en Supabase (rasgos):", e);
+      }
+    }
+
+    async function procesarRasgosUsuario(usuario, rasgosPrecalculados) {
+      if (!usuario || !usuario.correo || !usuario.id) {
+        console.warn("No hay datos suficientes del usuario para rasgos.");
+        return;
+      }
+
+      const email = usuario.correo;
+
+      // Si ya tenemos rasgos de antes, úsalo; si no, llama a la API
+      const rasgos = rasgosPrecalculados ?? await obtenerRasgosPorEmail(email);
+
+      if (rasgos) {
+        await guardarRasgosEnSupabase(usuario.id, email, rasgos);
+      }
+    }
+
+    /* ========== APP ========= */
+    document.addEventListener("DOMContentLoaded",()=>{
+      // Pantallas
+      const pantallaInicial = document.getElementById("pantalla-inicial");
+      const appDiv = document.getElementById("app");
+      const finalDiv = document.getElementById("pantalla-final");
+      const finalTitulo = document.getElementById("final-titulo");
+      const finalMensaje = document.getElementById("final-mensaje");
+
+      // Formulario inicial
+      const inputNombre = document.getElementById("input-nombre");
+      const inputCorreo = document.getElementById("input-correo");
+      const selectGenero = document.getElementById("select-genero");
+      const btnComenzar = document.getElementById("btn-comenzar");
+      const inicioError = document.getElementById("inicio-error");
+
+      // App
+      let lblTiempo = document.getElementById("lbl-tiempo");
+      let txtProb = document.getElementById("texto-problema");
+      let area = document.getElementById("area-codigo");
+      let salida = document.getElementById("salida");
+      let nivel = document.getElementById("nivel-actual-texto");
+      let lblErrores = document.getElementById("contador-errores");
+
+      let btnAyuda = document.getElementById("btn-ayuda");
+      let btnComp = document.getElementById("btn-compilar");
+      let btnEj = document.getElementById("btn-ejecutar");
+      let btnSig = document.getElementById("btn-siguiente");
+      let btnRendirse = document.getElementById("btn-rendirse");
+
+      // Usuario
+      let usuario = null;
+
+      // Lógica ambiente
+      let pr = new Problemas();
+      let t = new Temporizador((x)=>lblTiempo.textContent=x);
+
+      let errores = 0;
+      let erroresTotales = 0;
+      let ayudas = 0;
+      let mostradas = 0;
+
+      function actualizarErrores() {
+        lblErrores.textContent = String(erroresTotales);
+      }
+
+      function iniciarSesion() {
+        errores = 0;
+        erroresTotales = 0;
+        ayudas = 0;
+        mostradas = 0;
+        lblErrores.textContent = "0";
+        lblTiempo.textContent = "00:00";
+        pr.niv = "NOVATO";
+        pr.i = 0;
+        txtProb.value = pr.act();
+        area.value = pr.code();
+        nivel.textContent = pr.niv;
+        t.reiniciar();
+      }
+
+      // Función para terminar sesión (usada al rendirse y al completar todo)
+      function terminarSesion() {
+        t.detener();
+        appDiv.style.display = "none";
+        pantallaInicial.style.display = "none";
+        finalDiv.style.display = "block";
+
+        if (usuario && usuario.nombre) {
+          finalTitulo.textContent = `Gracias por participar, ${usuario.nombre} 💛`;
+        } else {
+          finalTitulo.textContent = "Gracias por participar 💛";
+        }
+      }
+
+      // Validación simple de correo
+      function correoValido(correo) {
+        return correo.includes("@") && correo.includes(".");
+      }
+
+      // Botón COMENZAR
+      btnComenzar.onclick = async () => {
+        const nombre = inputNombre.value.trim();
+        const correo = inputCorreo.value.trim();
+        const genero = selectGenero.value;
+
+        if (!nombre || !correo || !genero) {
+          inicioError.textContent = "Por favor completa todos los campos.";
+          return;
+        }
+        if (!correoValido(correo)) {
+          inicioError.textContent = "Ingresa un correo válido.";
+          return;
+        }
+
+        // 1) Verificar primero si el correo EXISTE en la API del test
+        let rasgos = null;
+        try {
+          rasgos = await obtenerRasgosPorEmail(correo);
+        } catch (e) {
+          console.error("Error al verificar correo en API del test:", e);
+        }
+
+        // Si no hay rasgos, no dejamos entrar al ambiente
+        if (!rasgos) {
+          inicioError.innerHTML = `
+            Aún no has hecho el examen IPIP.<br>
+            Por favor realízalo en el siguiente enlace:<br>
+            <a href="https://person-app-itc.web.app/login" target="_blank"
+               style="color:#00d8a4; text-decoration:underline;">
+               https://person-app-itc.web.app/login
+            </a>
+          `;
+          return;
+        }
+
+        // 2) Si sí tiene test, ahora sí continuamos con Supabase
+        try {
+          const { data, error } = await supabaseClient
+            .from("usuarios")
+            .insert([{ nombre, correo, genero }])
+            .select();
+
+          if (error) {
+            console.error("Error en insert:", error);
+
+            if (error.code === "23505") {
+              const { data: existing, error: error2 } = await supabaseClient
+                .from("usuarios")
+                .select("*")
+                .eq("correo", correo)
+                .maybeSingle();
+
+              if (error2) {
+                console.error("Error al recuperar usuario existente:", error2);
+                inicioError.textContent = "Error al recuperar tus datos. Intenta de nuevo.";
+                return;
+              }
+
+              if (existing) {
+                usuario = existing;
+              } else {
+                inicioError.textContent = "Ocurrió un error inesperado con tu correo.";
+                return;
+              }
+            } else {
+              inicioError.textContent = "Error al guardar en la base de datos.";
+              return;
+            }
+          } else {
+            usuario = data[0];
+          }
+
+          inicioError.textContent = "";
+          pantallaInicial.style.display = "none";
+          appDiv.style.display = "block";
+          finalDiv.style.display = "none";
+
+          iniciarSesion();
+
+          // 3) Guardar rasgos en Supabase usando los que ya obtuvimos
+          procesarRasgosUsuario(usuario, rasgos);
+
+        } catch (e) {
+          console.error("Excepción en COMENZAR:", e);
+          inicioError.textContent = "Hubo un problema al conectar con Supabase.";
+        }
+      };
+
+      // ---- Botón AYUDA ----
+      btnAyuda.onclick = () =>{
+        let hs = pr.pistas();
+        if (mostradas < hs.length){
+          let text = pr.act()+"\n\nAyudas:\n";
+          for (let i=0;i<=mostradas;i++) text+=hs[i]+"\n\n";
+          txtProb.value=text;
+          mostradas++;
+          ayudas++;
+        } else {
+          if(!txtProb.value.includes("todas las ayudas"))
+            txtProb.value+="\n(Ya viste todas las ayudas disponibles.)";
+        }
+      };
+
+      // ---- Botón COMPILAR ----
+      btnComp.onclick = async()=>{
+        salida.textContent="";
+        try{
+          let py = await pyodideReady;
+          await py.runPythonAsync(`
+code=${JSON.stringify(area.value)}
+compile(code,"<user>","exec")
+`);
+          salida.style.color="#00e676";
+          salida.textContent="Compilación correcta.";
+        }catch(e){
+          salida.style.color="#ff7675";
+          salida.textContent="Error de compilación:\n"+e;
+          errores++;
+          erroresTotales++;
+          actualizarErrores();
+        }
+      };
+
+      // ---- Botón EJECUTAR ----
+      btnEj.onclick = async()=>{
+        salida.textContent = "";
+        if (area.value.includes("input(")) {
+          salida.style.color = "#ff7675";
+          salida.textContent = "No se permite usar input().";
+          return;
+        }
+
+        try {
+          let py = await pyodideReady;
+
+          await py.runPythonAsync(`
+      import sys,io
+      buf=io.StringIO()
+      old=sys.stdout
+      sys.stdout=buf
+      try: exec(${JSON.stringify(area.value)}, {})
+      finally: sys.stdout=old
+      out=buf.getvalue()
+      `);
+
+          let out = py.runPython("out").trim();
+          let esperada = pr.resp().trim();
+          const tiempo = t.getSegundos();
+
+          const esCorrecto = (normalizar(out) === normalizar(esperada));
+
+          if (usuario && usuario.id) {
+            try {
+              const { error: errRes } = await supabaseClient
+                .from("resultados")
+                .insert([{
+                  usuario_id: usuario.id,
+                  nivel: pr.niv,
+                  problema: pr.act(),
+                  correcto: esCorrecto,
+                  tiempo_seg: tiempo,
+                  errores: errores,
+                  ayudas: ayudas
+                }]);
+
+              if (errRes) {
+                console.error("Error guardando en resultados:", errRes);
+              }
+            } catch (e2) {
+              console.error("Excepción guardando en resultados:", e2);
+            }
+          }
+
+          if (esCorrecto) {
+            salida.style.color = "#00e676";
+            salida.textContent = "Respuesta correcta.";
+
+            let nuevo = evaluar(tiempo, errores, ayudas, pr.numNivel());
+
+            const esUltimoDelMasAlto =
+              (pr.niv === "AVANZADO" &&
+               pr.i === pr.p[pr.niv].length - 1 &&
+               nuevo === pr.niv);
+
+            if (esUltimoDelMasAlto) {
+              mostrarModal("¡Terminaste todos los niveles!");
+              terminarSesion();
+              return;
+            }
+
+            if (nuevo === pr.niv) {
+              pr.sig();
+            } else {
+              pr.cambiar(nuevo);
+              mostrarModal("¡Has cambiado de nivel! Ahora eres " + nuevo);
+            }
+
+            txtProb.value = pr.act();
+            area.value = pr.code();
+            nivel.textContent = pr.niv;
+
+            t.reiniciar();
+            errores = 0;
+            ayudas = 0;
+            mostradas = 0;
+
+          } else {
+            salida.style.color = "#ff7675";
+            salida.textContent =
+              "Respuesta incorrecta.\nObtenida:\n" + out +
+              "\n\nEsperada:\n" + esperada +
+              "\n\nIntenta de nuevo.";
+            errores++;
+            erroresTotales++;
+            actualizarErrores();
+          }
+        } catch (e) {
+          salida.style.color = "#ff7675";
+          salida.textContent = "Error en ejecución:\n" + e;
+          errores++;
+          erroresTotales++;
+          actualizarErrores();
+        }
+      };
+
+      // --- BOTÓN SIGUIENTE ---
+      btnSig.onclick = () => {
+        pr.sig();
+        txtProb.value = pr.act();
+        area.value = pr.code();
+        nivel.textContent = pr.niv;
+        salida.textContent = "";
+        t.reiniciar();
+        errores = 0;
+        ayudas = 0;
+        mostradas = 0;
+      };
+
+      // --- BOTÓN RENDIRSE (REAL) ---
+      btnRendirse.onclick = () => {
+        terminarSesion();
+      };
+    });
+  </script>
+
+</body>
+</html>
+
+//python -m http.server 5500
+
+
