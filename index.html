@@ -714,7 +714,7 @@
           const { data, error } = await supabaseClient
             .from("rasgos_api")
             .select("email")
-            .eq("email", correoNorm)
+            .eq("email", correo)
             .maybeSingle();
 
           if (error) {
