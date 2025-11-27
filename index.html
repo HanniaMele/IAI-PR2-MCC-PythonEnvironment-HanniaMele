@@ -714,7 +714,7 @@
           const { data, error } = await supabaseClient
             .from("rasgos_api")
             .select("email")
-            .eq("email", correo)
+            .eq("email", correoNorm)
             .maybeSingle();
 
           if (error) {
@@ -732,7 +732,7 @@
       // Botón COMENZAR
       btnComenzar.onclick = async () => {
         const nombre = inputNombre.value.trim();
-        const correo = inputCorreo.value.trim();
+        const correo = inputCorreo.value.trim().toLowerCase();
         const genero = selectGenero.value;
 
         if (!nombre || !correo || !genero) {
