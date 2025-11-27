@@ -745,7 +745,7 @@
         }
 
         // 1) Verificar que el correo tenga IPIP registrado en rasgos_api
-        const tieneIpip = await correoTieneIpipEnSupabase(email);
+        const tieneIpip = await correoTieneIpipEnSupabase(correo);
 
         if (!tieneIpip) {
           inicioError.innerHTML = `
