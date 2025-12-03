@@ -704,14 +704,104 @@
     }
 
     /* ========== EVALUAR NIVEL (simplificado) ========= */
-    function evaluar(t,e,a,n){
-      let P=e+a;
-      let rapido=t<120;
-      if(rapido&&P<=1&&n<3) n++;
-      if(n<1.5) return "NOVATO";
-      if(n<2.5) return "INTERMEDIO";
-      return "AVANZADO";
+    function evaluar(t, e, a, n) {
+    // t = tiempo (segundos)
+    // e = errores
+    // a = ayudas
+    // n = nivel actual numérico (1=NOVATO, 2=INTERMEDIO, 3=AVANZADO)
+  
+    //1) Determinar nivel actual como texto
+    let nivelActual = "NOVATO";
+    if (n >= 2.5) nivelActual = "AVANZADO";
+    else if (n >= 1.5) nivelActual = "INTERMEDIO";
+  
+    //2) Clasificar tiempo según el nivel (aprox. a tus FUZZIFY)
+    let tiempoCat;
+    if (nivelActual === "NOVATO") {
+      if (t <= 15) tiempoCat = "corto";
+      else if (t <= 30) tiempoCat = "medio";
+      else tiempoCat = "largo";
+    } else if (nivelActual === "INTERMEDIO") {
+      if (t <= 90) tiempoCat = "corto";
+      else if (t <= 120) tiempoCat = "medio";
+      else tiempoCat = "largo";
+    } else { // AVANZADO
+      if (t <= 120) tiempoCat = "corto";
+      else if (t <= 180) tiempoCat = "medio";
+      else tiempoCat = "largo";
     }
+  
+    //3) Clasificar errores
+    let erroresCat;
+    if (e <= 1) erroresCat = "pocos";
+    else if (e <= 3) erroresCat = "algunos";
+    else erroresCat = "muchos";
+  
+    //4) Clasificar ayudas
+    let ayudasCat;
+    if (a === 0) ayudasCat = "ninguna";
+    else if (a <= 2) ayudasCat = "algunas";
+    else ayudasCat = "muchas";
+  
+    //5) Aplicar reglas "compactadas" inspiradas en tu RULEBLOCK:
+  
+    let nivelNum = n; // empezamos desde el nivel actual numérico
+  
+    if (nivelActual === "NOVATO") {
+      //Subir a INTERMEDIO solo si va rápido y no abusa de ayudas/errores
+      if (tiempoCat === "corto" &&
+          (erroresCat === "pocos" || erroresCat === "algunos") &&
+          (ayudasCat === "ninguna" || ayudasCat === "algunas")) {
+        nivelNum = 2; //INTERMEDIO
+      } else {
+        nivelNum = 1; //se queda en NOVATO
+      }
+    } else if (nivelActual === "INTERMEDIO") {
+  
+      if ((tiempoCat === "corto" || tiempoCat === "medio") &&
+          (erroresCat === "pocos" || erroresCat === "algunos") &&
+          (ayudasCat === "ninguna" || ayudasCat === "algunas")) {
+        //Buen desempeño → AVANZADO
+        nivelNum = 3;
+      } else if (tiempoCat === "largo" &&
+                 (erroresCat === "muchos" || ayudasCat === "muchas")) {
+        //Muy mal desempeño → NOVATO
+        nivelNum = 1;
+      } else {
+        //Zona intermedia → se queda en INTERMEDIO
+        nivelNum = 2;
+      }
+  
+    } else { //AVANZADO
+  
+      if (tiempoCat === "corto" || tiempoCat === "medio") {
+        if ((erroresCat === "pocos" || erroresCat === "algunos") &&
+            (ayudasCat === "ninguna" || ayudasCat === "algunas")) {
+          //Buen desempeño → se mantiene en AVANZADO
+          nivelNum = 3;
+        } else if (erroresCat === "muchos" || ayudasCat === "muchas") {
+          //Varias fallas pero no desastroso → baja a INTERMEDIO
+          nivelNum = 2;
+        }
+      } else { //tiempo largo en avanzado
+        if (erroresCat === "muchos" && ayudasCat === "muchas") {
+          //Caso muy malo → podría bajar incluso a NOVATO,
+          //pero para no ser tan agresivo lo dejamos en INTERMEDIO o NOVATO.
+          nivelNum = 1;
+        } else if (erroresCat === "muchos" || ayudasCat === "muchas") {
+          nivelNum = 2;
+        } else {
+          //Lento pero sin tantas fallas → se queda en AVANZADO
+          nivelNum = 3;
+        }
+      }
+    }
+  
+    // 6) Devolver etiqueta según nivelNum final
+    if (nivelNum < 1.5) return "NOVATO";
+    if (nivelNum < 2.5) return "INTERMEDIO";
+    return "AVANZADO";
+  }
 
     /* ========== APP ========= */
     document.addEventListener("DOMContentLoaded",()=>{
