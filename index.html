@@ -989,16 +989,16 @@ compile(code,"<user>","exec")
           let py = await pyodideReady;
 
           await py.runPythonAsync(`
-import sys, io
-buf = io.StringIO()
-old = sys.stdout
-sys.stdout = buf
-try:
-    exec(${JSON.stringify(area.value)}, {})
-finally:
-    sys.stdout = old
-out = buf.getvalue()
-`);
+          import sys, io
+          buf = io.StringIO()
+          old = sys.stdout
+          sys.stdout = buf
+          try:
+              exec(${JSON.stringify(area.value)}, {})
+          finally:
+              sys.stdout = old
+          out = buf.getvalue()
+          `);
 
           let out = py.runPython("out").trim();
           let esperada = pr.resp().trim();
