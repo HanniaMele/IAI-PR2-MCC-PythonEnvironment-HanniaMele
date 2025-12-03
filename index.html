@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <title>Ambiente Python Web</title>
 
-  <!-- Tus estilos generales -->
   <style>
-    /* ======== ESTILOS GENERALES ======== */
+    /*========ESTILOS GENERALES========*/
     :root {
       --bg-main: #181a1b;
       --bg-panel: #202324;
@@ -214,7 +213,7 @@
       color: #a0a0a0;
     }
 
-    /* ======== TEXTAREAS ======== */
+    /*========TEXT AREAS======== */
     #texto-problema,
     #area-codigo {
       width: 100%;
@@ -237,7 +236,7 @@
       font-family: Consolas, monospace;
     }
 
-    /* ======== BOTONES ======== */
+    /*========BOTONES========*/
     #botones-problema {
       display: flex;
       gap: 10px;
@@ -302,7 +301,7 @@
       font-size: 0.9rem;
     }
 
-    /* ======== PANTALLA DE SALIDA ======== */
+    /*========PANTALLA DE SALIDA========*/
     #pantalla-final {
       display: none;
       text-align: center;
@@ -315,13 +314,11 @@
       margin-bottom: 20px;
     }
   </style>
-
-  <!-- Aquí cargas tu CSS del modal -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- PANTALLA INICIAL -->
+  <!--PANTALLA INICIAL-->
   <div id="pantalla-inicial">
     <div class="inicio-card">
       <h1>Ambiente Python</h1>
@@ -353,10 +350,10 @@
     </div>
   </div>
 
-  <!-- APP PRINCIPAL -->
+  <!--APP PRINCIPAL-->
   <div class="app-container" id="app">
 
-    <!-- MODAL -->
+    <!--MODAL-->
     <div id="modal" class="modal oculto">
       <div class="modal-content">
         <p id="modal-texto"></p>
@@ -402,13 +399,13 @@
     </section>
   </div>
 
-  <!-- PANTALLA FINAL -->
+  <!--PANTALLA FINAL-->
   <div id="pantalla-final">
     <h1 id="final-titulo">Gracias por participar 💛</h1>
     <p id="final-mensaje">Tu sesión ha terminado.</p>
   </div>
 
-  <!-- Supabase -->
+  <!--Supabase-->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const { createClient } = supabase;
@@ -419,11 +416,11 @@
     );
   </script>
 
-  <!-- Pyodide -->
+  <!--Pyodide-->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.0/full/pyodide.js"></script>
 
   <script>
-    /* ========== MODAL ========== */
+    /*==========MODAL==========*/
     function mostrarModal(texto) {
       document.getElementById("modal-texto").textContent = texto;
       document.getElementById("modal").classList.remove("oculto");
@@ -436,12 +433,12 @@
       }
     });
 
-    /* ========== PYODIDE ========== */
+    /*==========PYODIDE==========*/
     let pyodideReady = loadPyodide({
       indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.0/full/"
     });
 
-    /* ========== TEMPORIZADOR ========== */
+    /*==========TEMPORIZADOR==========*/
     class Temporizador {
       constructor(cb) {
         this.seg = 0;
@@ -462,7 +459,7 @@
       getSegundos() { return this.seg; }
     }
 
-    /* ========== PROBLEMAS (con selección aleatoria de máx. 3 por nivel) ========== */
+    /*==========PROBLEMAS (con selección aleatoria de máx. 3 por nivel)========== */
     class Problemas {
       constructor() {
         this.niv = "NOVATO";
@@ -698,12 +695,12 @@
       }
     }
 
-    /* ========== NORMALIZAR ========= */
+    /*==========NORMALIZAR=========*/
     function normalizar(s){
       return s.replace(/\s+/g," ").replace(/\s*,\s*/g,",").trim();
     }
 
-    /* ========== EVALUAR NIVEL (simplificado) ========= */
+    /*==========EVALUAR NIVEL (simplificado)=========*/
     function evaluar(t, e, a, n) {
     // t = tiempo (segundos)
     // e = errores
@@ -797,13 +794,13 @@
       }
     }
   
-    // 6) Devolver etiqueta según nivelNum final
+    //6) Devolver etiqueta según nivelNum final
     if (nivelNum < 1.5) return "NOVATO";
     if (nivelNum < 2.5) return "INTERMEDIO";
     return "AVANZADO";
   }
 
-    /* ========== APP ========= */
+    /*========== APP =========*/
     document.addEventListener("DOMContentLoaded",()=>{
 
       const pantallaInicial = document.getElementById("pantalla-inicial");
