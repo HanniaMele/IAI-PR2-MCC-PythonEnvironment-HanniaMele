@@ -509,86 +509,162 @@
 
         this.p = {
           NOVATO:[
-            "Problema 1: Imprime 'Hola Mundo'.",
+            "Problema 1: Imprime 'Hola mundo'.",
             "Problema 2: Suma 10 + 15 + 25 y muestra el resultado.",
-            "Problema 3: Calcula y muestra el cuadrado de 3."
+            "Problema 3: Calcula y muestra el cuadrado de 3.",
+            "Problema 4: Muestra la suma de los elementos de la lista [2, 4, 6]",
+            "Problema 5: Muestra el resultado de 8 * 3.",
+            "Problema 6: Muestra la última letra de la cadena 'Python'"
           ],
           INTERMEDIO:[
             "Problema 1: Determina si el número 7 es primo.",
             "Problema 2: Crea una función que invierta la cadena 'Python'.",
-            "Problema 3: Calcula la suma de los números pares del 1 al 100."
+            "Problema 3: Calcula la suma de los números pares del 1 al 100.",
+            "Problema 4: Muestra los números del 1 al 5 usando un ciclo for.",
+            "Problema 5: Calcula el cubo de cada número en la lista [1, 2, 3, 4] y muestra los resultados.",
+            "Problema 6: Determina cuántos elementos de la lista [1, 3, 5, 7, 9] son mayores que 4."
           ],
           AVANZADO:[
             "Problema 1: Calcula el factorial de 5 usando recursión.",
             "Problema 2: Cuenta cuántas vocales tiene la palabra 'Programacion'.",
-            "Problema 3: Elimina duplicados de [1,2,2,3,3,3,4]."
+            "Problema 3: Elimina duplicados de [1,2,2,3,3,3,4].",
+            "Problema 4: Usa recursión para sumar los elementos de [1, 2, 3, 4, 5]."
+            "Problema 5: Dado el diccionario {'a': 1, 'b': 2, 'c': 3}, muestra la suma de sus valores.",
+            "Problema 6: Ordena la lista [9, 1, 4, 2, 7] de menor a mayor y muéstrala."
           ]
         };
 
         this.r = {
-          NOVATO:["Hola Mundo","50","9"],
-          INTERMEDIO:["Es primo","nohtyP","2550"],
-          AVANZADO:["120","5","1 2 3 4"]
+          NOVATO:["Hola mundo","50","9", "12", "24", "n"],
+          INTERMEDIO:["Es primo","nohtyP","2550", "1, 2, 3, 4, 5", "[1, 8, 27, 64]", "3 elementos"],
+          AVANZADO:["120","5","[1, 2, 3, 4]", "15", "6", "[1, 2, 4, 7, 9]"]
         };
 
         this.h = {
-          NOVATO:[
+          NOVATO: [
             [
-              "'Hola Mundo' es de tipo string.",
+              //Problema 1
+              "'Hola mundo' es de tipo string.",
               "Usa print() para imprimir.",
               "Usa comillas dentro de print()."
             ],
             [
+              //Problema 2
               "Necesitarás '+'.",
               "Puedes sumar dentro de print().",
               "No uses comillas en enteros."
             ],
             [
+              //Problema 3
               "Crea variable 'cuadrado'.",
               "Usa *, cuadrado = 3*3.",
               "Imprime la variable."
+            ],
+            //Problema 4: lista [2,4,6] y suma
+            [
+              "Crea una lista con [2, 4, 6].",
+              "Puedes usar sum(lista).",
+              "Imprime el resultado de la suma."
+            ],
+            //Problema 5: 8 * 3
+            [
+              "La multiplicación usa *.",
+              "Multiplica 8*3 directamente.",
+              "Imprime el resultado de 8*3."
+            ],
+            //Problema 6: última letra de "Python"
+            [
+              "Guarda 'Python' en una variable.",
+              "Las cadenas se pueden indexar.",
+              "La última letra es cadena[-1]."
             ]
           ],
-          INTERMEDIO:[
+        
+          INTERMEDIO: [
             [
+              //Problema 1
               "Un primo solo tiene 2 divisores.",
               "Usa for para probar divisores.",
               "Si hay divisor → no es primo."
             ],
             [
+              //Problema 2
               "Puedes usar slicing [::-1].",
               "Cadena al revés: cadena[::-1].",
               "Devuelve el resultado."
             ],
             [
+              //Problema 3
               "Par = divisible entre 2.",
               "Usa range(2,101,2).",
               "sum(range(...))"
+            ],
+            //Problema 4: mostrar 1 al 5 con for
+            [
+              "Usa range(1,6) en un for.",
+              "Imprime cada número en el ciclo.",
+              "Asegúrate de que llegue hasta 5."
+            ],
+            //Problema 5: cubos de [1,2,3,4]
+            [
+              "Usa una lista con [1, 2, 3, 4].",
+              "El cubo es n**3.",
+              "Guarda los cubos en una nueva lista."
+            ],
+            //Problema 6: elementos >4 en [1,3,5,7,9]
+            [
+              "Revisa cada número de la lista.",
+              "Compara con > 4.",
+              "Cuenta cuántos cumplen la condición."
             ]
           ],
-          AVANZADO:[
-            [
-              "Usa recursión: f(n)=n*f(n-1).",
-              "Caso base: 1.",
-              "Llama factorial(5)."
-            ],
-            [
-              "Cuenta vocales.",
-              "Convierte a minúsculas.",
-              "if c in 'aeiou'."
-            ],
-            [
-              "Usa set() para duplicados.",
-              "Convierte a list() y ordénala.",
-              "Imprime con join()."
-            ]
+
+        AVANZADO: [
+          [
+            //Problema 1
+            "Usa recursión: f(n)=n*f(n-1).",
+            "Caso base: 1.",
+            "Llama factorial(5)."
+          ],
+          [
+            //Problema 2
+            "Convierte la cadena a minúsculas para evitar distinguir entre mayúsculas y minúsculas.",
+            "Recorre la cadena carácter por carácter y verifica si pertenece al conjunto de vocales.",
+            "Incrementa un contador cada vez que c esté en 'aeiou'."
+          ],
+          [
+            //Problema 3
+            "Usa set() para duplicados.",
+            "Convierte a list() y ordénala.",
+            "Imprime con join()."
+          ],
+          //Problema 4: recursión para sumar [1,2,3,4,5]
+          [
+            "La función recursiva debe recibir la lista y avanzar hacia un caso base.",
+            "Caso base: cuando la lista esté vacía, retorna 0 (no hay más elementos que sumar).",
+            "Caso recursivo: retorna lista[0] + función(lista[1:]) para reducir el problema en cada llamada."
+          ],
+          //Problema 5: suma valores dict {'a':1,'b':2,'c':3}
+          [
+            "Trabajas con un diccionario.",
+            "Usa values() para obtener los valores.",
+            "sum(dict.values())."
+          ],
+          //Problema 6: ordenar [9,1,4,2,7]
+          [
+            "Crea la lista desordenada.",
+            "Usa sort() o sorted().",
+            "Imprime la lista ya ordenada."
           ]
-        };
+        ]
+      };
+
 
         this.init = {
-          NOVATO:["","",""],
-          INTERMEDIO:["n=7\n","cadena='Python'\n",""],
-          AVANZADO:["","palabra='Programacion'\ncontador=0\n","numeros=[1,2,2,3,3,3,4]\n"]
+          NOVATO:["","","","lista = [2,4,6]","", "cadena = 'Python'"],
+          INTERMEDIO:["n = 7\n","cadena = 'Python'\n","", "","lista = [1,2,3,4]","lista = [1,3,5,7,9]"],
+          AVANZADO:["","palabra = 'Programacion'\ncontador = 0\n","numeros = [1,2,2,3,3,3,4]\n",
+                   ]
         };
       }
 
