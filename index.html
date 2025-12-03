@@ -501,7 +501,7 @@
       getSegundos() { return this.seg; }
     }
 
-    /* ========== PROBLEMAS ========== */
+    /* ========== PROBLEMAS (con selección aleatoria de máx. 3 por nivel) ========== */
     class Problemas {
       constructor() {
         this.niv = "NOVATO";
@@ -528,7 +528,7 @@
             "Problema 1: Calcula el factorial de 5 usando recursión.",
             "Problema 2: Cuenta cuántas vocales tiene la palabra 'Programacion'.",
             "Problema 3: Elimina duplicados de [1,2,2,3,3,3,4].",
-            "Problema 4: Usa recursión para sumar los elementos de [1, 2, 3, 4, 5]."
+            "Problema 4: Usa recursión para sumar los elementos de [1, 2, 3, 4, 5].",
             "Problema 5: Dado el diccionario {'a': 1, 'b': 2, 'c': 3}, muestra la suma de sus valores.",
             "Problema 6: Ordena la lista [9, 1, 4, 2, 7] de menor a mayor y muéstrala."
           ]
@@ -536,7 +536,14 @@
 
         this.r = {
           NOVATO:["Hola mundo","50","9", "12", "24", "n"],
-          INTERMEDIO:["Es primo","nohtyP","2550", "1, 2, 3, 4, 5", "[1, 8, 27, 64]", "3 elementos"],
+          INTERMEDIO:[
+            "Es primo",
+            "nohtyP",
+            "2550",
+            "1, 2, 3, 4, 5",
+            "[1, 8, 27, 64]",
+            "3 elementos"
+          ],
           AVANZADO:["120","5","[1, 2, 3, 4]", "15", "6", "[1, 2, 4, 7, 9]"]
         };
 
@@ -579,7 +586,7 @@
               "La última letra es cadena[-1]."
             ]
           ],
-        
+
           INTERMEDIO: [
             [
               //Problema 1
@@ -619,73 +626,119 @@
             ]
           ],
 
-        AVANZADO: [
-          [
-            //Problema 1
-            "Usa recursión: f(n)=n*f(n-1).",
-            "Caso base: 1.",
-            "Llama factorial(5)."
-          ],
-          [
-            //Problema 2
-            "Convierte la cadena a minúsculas para evitar distinguir entre mayúsculas y minúsculas.",
-            "Recorre la cadena carácter por carácter y verifica si pertenece al conjunto de vocales.",
-            "Incrementa un contador cada vez que c esté en 'aeiou'."
-          ],
-          [
-            //Problema 3
-            "Usa set() para duplicados.",
-            "Convierte a list() y ordénala.",
-            "Imprime con join()."
-          ],
-          //Problema 4: recursión para sumar [1,2,3,4,5]
-          [
-            "La función recursiva debe recibir la lista y avanzar hacia un caso base.",
-            "Caso base: cuando la lista esté vacía, retorna 0 (no hay más elementos que sumar).",
-            "Caso recursivo: retorna lista[0] + función(lista[1:]) para reducir el problema en cada llamada."
-          ],
-          //Problema 5: suma valores dict {'a':1,'b':2,'c':3}
-          [
-            "Trabajas con un diccionario.",
-            "Usa values() para obtener los valores.",
-            "sum(dict.values())."
-          ],
-          //Problema 6: ordenar [9,1,4,2,7]
-          [
-            "Crea la lista desordenada.",
-            "Usa sort() o sorted().",
-            "Imprime la lista ya ordenada."
+          AVANZADO: [
+            [
+              //Problema 1
+              "Usa recursión: f(n)=n*f(n-1).",
+              "Caso base: 1.",
+              "Llama factorial(5)."
+            ],
+            [
+              //Problema 2
+              "Convierte la cadena a minúsculas para evitar distinguir entre mayúsculas y minúsculas.",
+              "Recorre la cadena carácter por carácter y verifica si pertenece al conjunto de vocales.",
+              "Incrementa un contador cada vez que c esté en 'aeiou'."
+            ],
+            [
+              //Problema 3
+              "Usa set() para duplicados.",
+              "Convierte a list() y ordénala.",
+              "Imprime con join()."
+            ],
+            //Problema 4: recursión para sumar [1,2,3,4,5]
+            [
+              "La función recursiva debe recibir la lista y avanzar hacia un caso base.",
+              "Caso base: cuando la lista esté vacía, retorna 0 (no hay más elementos que sumar).",
+              "Caso recursivo: retorna lista[0] + función(lista[1:]) para reducir el problema en cada llamada."
+            ],
+            //Problema 5: suma valores dict {'a':1,'b':2,'c':3}
+            [
+              "Trabajas con un diccionario.",
+              "Usa values() para obtener los valores.",
+              "sum(dict.values())."
+            ],
+            //Problema 6: ordenar [9,1,4,2,7]
+            [
+              "Crea la lista desordenada.",
+              "Usa sort() o sorted().",
+              "Imprime la lista ya ordenada."
+            ]
           ]
-        ]
-      };
-
+        };
 
         this.init = {
-          NOVATO:["","","","lista = [2,4,6]","", "cadena = 'Python'"],
-          INTERMEDIO:["n = 7\n","cadena = 'Python'\n","", "","lista = [1,2,3,4]","lista = [1,3,5,7,9]"],
-          AVANZADO:["","palabra = 'Programacion'\ncontador = 0\n","numeros = [1,2,2,3,3,3,4]\n",
-                   ]
+          NOVATO:["","","","lista = [2,4,6]","","cadena = 'Python'"],
+          INTERMEDIO:[
+            "n = 7\n",
+            "cadena = 'Python'\n",
+            "",
+            "",
+            "lista = [1,2,3,4]",
+            "lista = [1,3,5,7,9]"
+          ],
+          AVANZADO:[
+            "",
+            "palabra = 'Programacion'\ncontador = 0\n",
+            "numeros = [1,2,2,3,3,3,4]\n",
+            "",
+            "",
+            ""
+          ]
+        };
+
+        const MAX_POR_NIVEL = 3;
+        this.indices = {
+          NOVATO: this.crearIndicesAleatorios("NOVATO", MAX_POR_NIVEL),
+          INTERMEDIO: this.crearIndicesAleatorios("INTERMEDIO", MAX_POR_NIVEL),
+          AVANZADO: this.crearIndicesAleatorios("AVANZADO", MAX_POR_NIVEL)
         };
       }
 
-      act() { return this.p[this.niv][this.i]; }
-      resp() { return this.r[this.niv][this.i]; }
-      pistas() { return this.h[this.niv][this.i]; }
-      code() { return this.init[this.niv][this.i]; }
-      numNivel() { return this.niv==="NOVATO"?1:this.niv==="INTERMEDIO"?2:3; }
+      crearIndicesAleatorios(nivel, maxPorNivel) {
+        const total = this.p[nivel].length;
+        const indices = Array.from({ length: total }, (_, i) => i);
+
+        // Mezcla aleatoria (Fisher–Yates)
+        for (let i = total - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+
+        return indices.slice(0, Math.min(maxPorNivel, total));
+      }
+
+      indiceActual() {
+        return this.indices[this.niv][this.i];
+      }
+
+      act()  { return this.p[this.niv][this.indiceActual()]; }
+      resp() { return this.r[this.niv][this.indiceActual()]; }
+      pistas(){ return this.h[this.niv][this.indiceActual()]; }
+      code() { return this.init[this.niv][this.indiceActual()] || ""; }
+
+      numNivel() {
+        return this.niv === "NOVATO" ? 1 : this.niv === "INTERMEDIO" ? 2 : 3;
+      }
+
+      totalProblemasNivelActual() {
+        return this.indices[this.niv].length;
+      }
 
       sig() {
         this.i++;
-        if (this.i>=this.p[this.niv].length) {
-          if (this.niv==="AVANZADO"){
-            this.i = this.p[this.niv].length - 1;
+        if (this.i >= this.indices[this.niv].length) {
+          if (this.niv === "AVANZADO") {
+            this.i = this.indices[this.niv].length - 1;
           } else {
-            this.i=0;
+            this.i = 0;
           }
         }
       }
 
-      cambiar(n) { this.niv=n; this.i=0; }
+      cambiar(n) {
+        this.niv = n;
+        this.i = 0;
+      }
     }
 
     /* ========== NORMALIZAR ========= */
@@ -981,11 +1034,10 @@ out = buf.getvalue()
 
             let nuevo = evaluar(tiempo, errores, ayudas, pr.numNivel());
 
-            // ¿Estamos en el último problema del nivel más alto (AVANZADO)?
             const esUltimoDelMasAlto =
               (pr.niv === "AVANZADO" &&
-              pr.i === pr.p[pr.niv].length - 1 &&
-              nuevo === pr.niv);
+               pr.i === pr.totalProblemasNivelActual() - 1 &&
+               nuevo === pr.niv);
 
             if (esUltimoDelMasAlto) {
               mostrarModal("¡Terminaste todos los niveles!");
@@ -1050,6 +1102,5 @@ out = buf.getvalue()
 
 </body>
 </html>
-
 
 
